@@ -1,2 +1,34 @@
 [general]
-package="jp.pokemon.pokemontcgp"
+package = ""
+
+[display]
+zoom_ratio = 1.0
+random_offset = 0
+
+[delays]
+detect_delay = 0
+restart_delay = 0
+screenshot_delay = 0
+freeze_threshold = 0
+focus_threshold = 0
+
+[modes]
+emulator_mode = ""
+control_mode = ""
+adb_mode = ""
+
+[adb]
+adb_port = ""
+adb_ip = ""
+adb_id = ""
+
+[performance]
+max_fps = 120
+bitrate = 12000
+
+[others]
+top_window = false
+restart_app = false
+notify_result = false
+dev_mode = false
+line_notify_token = ""

@@ -1,10 +1,9 @@
 import tomllib
+from pathlib import Path
 
 from adb import ADB
 
 if __name__ == "__main__":
-  with open("sample config.toml", "rb") as f:
+  with Path("sample config.toml").open("rb") as f:
     data = tomllib.load(f)
-  adb = ADB(data['general']['package'])
-
-  
+  adb = ADB(data["general"]["package"])
