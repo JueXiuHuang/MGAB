@@ -1,16 +1,18 @@
 from collections.abc import Callable
-from typing import Any
+from typing import Any, TypeVar
 
 import scrcpy
 from adbutils import AdbDevice, adb
 
 from mode import ADBMode
 
+T = TypeVar("T")
 
-def singleton(cls: Any) -> Callable:
+
+def singleton(cls: type[T]) -> Callable[..., T]:
   instances = {}
 
-  def get_instance(*args: tuple, **kwargs: dict[str, Any]) -> Any:
+  def get_instance(*args: tuple, **kwargs: dict[str, Any]) -> T:
     if cls not in instances:
       instances[cls] = cls(*args, **kwargs)
     return instances[cls]
@@ -41,11 +43,11 @@ class ADB:
     return self.client.control.touch(xy[0], xy[1], action)
 
   def back(self) -> None:
-    """Simulate android BACK."""
+    """Simulate android BACK event."""
     self.d.keyevent("KEYCODE_BACK")
 
   def home(self) -> None:
-    """Simulate android HOME."""
+    """Simulate android HOME event."""
     self.d.keyevent("HOME")
 
   def get_resolution(self) -> tuple[int, int] | None:

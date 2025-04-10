@@ -1,2 +1,4 @@
 git+https://github.com/leng-yue/py-scrcpy-client@v0.5.0
 adbutils
+pywin32
+Pillow
