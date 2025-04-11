@@ -24,7 +24,6 @@ class Control:
     elif self.mode == ControlMode.ADB:
       pass
 
-  @property
   def adb(self) -> ADB:
     """Dynamically get ADB instance."""
     return ADB("")
