@@ -3,8 +3,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-  """Configs."""
-
   def __init__(self) -> None:
     # display & input adjust
     self.zoom_ratio: float = 1.0

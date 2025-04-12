@@ -3,6 +3,11 @@ target-version = "py312"
 select = [
   "ALL", # include all the rules, including new ones
 ]
+ignore = [
+  "D101", # class doc string
+  "D107", # init doc string
+  "D100", # file doc string
+]
 indent-width = 2
 [format]
 indent-style = "space"

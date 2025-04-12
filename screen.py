@@ -40,7 +40,7 @@ class ADBScreen(Screen):
 class WIN32Screen(Screen):
   """Screen related operation with win32 api."""
 
-  def __init__(self, _hwnd: int) -> None:  # noqa: D107
+  def __init__(self, _hwnd: int) -> None:
     self.hwnd = _hwnd
     if self.hwnd is None:
       raise Exception("Need hwnd in WIN32API mode")
