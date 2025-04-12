@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Variable:
-  """Variable keep values in config file."""
+class Config:
+  """Configs."""
 
   def __init__(self) -> None:
     # display & input adjust
@@ -45,8 +45,8 @@ class Variable:
     self.win: int = None
     self.lose: int = None
 
-  def load_from_config_file(self) -> None:
+  def load_from_file(self) -> None:
     """Load config from file."""
 
-  def save_to_config_file(self) -> None:
+  def save_to_file(self) -> None:
     """Save config to file."""
