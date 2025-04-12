@@ -3,6 +3,7 @@ from typing import Any, TypeVar
 
 import scrcpy
 from adbutils import AdbDevice, adb
+from PIL import Image
 
 from mode import ADBMode
 
@@ -77,8 +78,9 @@ class ADB:
     return r
 
   def create_client(self, mode: ADBMode, max_fps: int, bitrate: int, update_screen: Callable) -> None:
+    """Create client."""
     # add screenshot listener
-    def on_frame(frame):
+    def on_frame(frame: Image.Image) -> None:
       # If you set non-blocking (default) in constructor, the frame event receiver
       # may receive None to avoid blocking event.
       if frame is not None:
