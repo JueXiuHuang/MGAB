@@ -1,4 +1,7 @@
-git+https://github.com/leng-yue/py-scrcpy-client@v0.5.0
 adbutils
-pywin32
+git+https://github.com/leng-yue/py-scrcpy-client@v0.5.0
 Pillow
+pydantic
+pywin32
+setuptools
+toml
