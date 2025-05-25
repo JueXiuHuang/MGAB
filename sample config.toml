@@ -1,5 +1,10 @@
 [general]
 package = ""
+top_window = false
+restart_app = false
+notify_result = false
+dev_mode = false
+line_notify_token = ""
 
 [display]
 zoom_ratio = 1.0
@@ -25,10 +30,3 @@ adb_id = ""
 [performance]
 max_fps = 120
 bitrate = 12000
-
-[others]
-top_window = false
-restart_app = false
-notify_result = false
-dev_mode = false
-line_notify_token = ""
