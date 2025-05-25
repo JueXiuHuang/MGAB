@@ -1,50 +1,88 @@
-from dataclasses import dataclass
+from pathlib import Path
+
+import toml
+from pydantic import BaseModel, Field, ValidationError
 
 
-@dataclass
-class Config:
-  def __init__(self) -> None:
-    # display & input adjust
-    self.zoom_ratio: float = 1.0
-    self.random_offset: int = 0
+class DisplayInputAdjust(BaseModel):
+  zoom_ratio: float = 1.0
+  random_offset: int = Field(default=0, ge=0)
 
-    # timing & delays
-    self.detect_delay: int = None
-    self.restart_delay: int = None
-    self.screenshot_delay: int = None
-    self.freeze_threshold: int = None
-    self.focus_threshold: int = None
 
-    # file configuration
-    self.config_file_name: str = "config.toml"  # constant
-    self.update_file_name: str = "update.md"  # constant
+class TimingDelays(BaseModel):
+  detect_delay: int = Field(default=0, ge=0)
+  restart_delay: int = Field(default=0, ge=0)
+  screenshot_delay: int = Field(default=0, ge=0)
+  freeze_threshold: int = Field(default=0, ge=0)
+  focus_threshold: int = Field(default=0, ge=0)
 
-    # bot modes
-    self.emulator_mode: str = None
-    self.control_mode: str = None
-    self.adb_mode: str = None
 
-    # ADB
-    self.adb_port: str = None
-    self.adb_ip: str = None
-    self.adb_id: str = None
+class BotModes(BaseModel):
+  emulator_mode: str = None
+  control_mode: str = None
+  adb_mode: str = None
 
-    # performance
-    self.max_fps: int = None
-    self.bitrate: int = None
 
-    self.top_window: bool = None
-    self.restart_app: bool = None
-    self.notify_result: bool = None
-    self.dev_mode: str = None
-    self.line_notify_token: str = None
+class AdbSettings(BaseModel):
+  adb_port: str = Field(default="5555")
+  adb_ip: str = Field(default="127.0.0.1")
+  adb_id: str = None
 
-    # game statistic
-    self.win: int = None
-    self.lose: int = None
 
-  def load_from_file(self) -> None:
-    """Load config from file."""
+class PerformanceSettings(BaseModel):
+  max_fps: int = Field(default=120, gt=0)
+  bitrate: int = Field(default=12000, gt=0)
 
-  def save_to_file(self) -> None:
-    """Save config to file."""
+
+class GeneralFlags(BaseModel):
+  top_window: bool = False
+  restart_app: bool = False
+  notify_result: bool = False
+  dev_mode: bool = False
+  line_notify_token: str = None
+  package: str = None
+
+
+class AppConfig(BaseModel):
+  display_input: DisplayInputAdjust = Field(default_factory=DisplayInputAdjust)
+  timing: TimingDelays = Field(default_factory=TimingDelays)
+  modes: BotModes = Field(default_factory=BotModes)
+  adb: AdbSettings = Field(default_factory=AdbSettings)
+  performance: PerformanceSettings = Field(default_factory=PerformanceSettings)
+  general: GeneralFlags = Field(default_factory=GeneralFlags)
+
+  @classmethod
+  def load_from_file(cls, file_path: str | Path = "config.toml") -> "AppConfig":
+    """Load from toml and verify data."""
+    file_path_obj = Path(file_path)
+    if not file_path_obj.exists():
+      print(f"Warning: Configuration file '{file_path_obj}' not found. Returning default configuration.")
+      return cls()
+
+    try:
+      with file_path_obj.open("r", encoding="utf-8") as f:
+        data_from_toml = toml.load(f)
+      return cls(**data_from_toml)
+    except toml.TomlDecodeError as e:
+      print(f"Error decoding TOML file '{file_path_obj}': {e}")
+      print("Returning default configuration.")
+      return cls()
+    except ValidationError as e:
+      print(f"Configuration validation error from file '{file_path_obj}': {e}")
+      print("Please check your config.toml structure. Returning default configuration.")
+      return cls()
+    except Exception as e:
+      print(f"An unexpected error occurred while loading config '{file_path_obj}': {e}")
+      print("Returning default configuration.")
+      return cls()
+
+  def save_to_file(self, file_path: str | Path = "config.toml") -> None:
+    """Save to toml."""
+    file_path_obj = Path(file_path)
+    try:
+      config_dict = self.model_dump(mode="python")
+      with file_path_obj.open("w", encoding="utf-8") as f:
+        toml.dump(config_dict, f)
+      print(f"Configuration successfully saved to '{file_path_obj}'.")
+    except Exception as e:
+      print(f"Error saving configuration to '{file_path_obj}': {e}")
