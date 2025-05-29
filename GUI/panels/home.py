@@ -2,12 +2,14 @@ import tkinter as tk
 from tkinter import scrolledtext, ttk
 
 from adb import ADB
+from log import LogDisplayManager, log_queue
 
 
 class HomePanel:
   def __init__(self, parent_frame: ttk.Frame, adb_instance: ADB) -> None:
     self.frame = ttk.Frame(parent_frame, style="Content.TFrame")
     self.adb = adb_instance
+    self.log_display_manager = None
     self._create_widgets()
     self.frame.pack(expand=True, fill=tk.BOTH)
 
@@ -71,8 +73,11 @@ class HomePanel:
       font=("Consolas", 10),
     )
     self.console_text.pack(expand=True, fill=tk.BOTH)
-    self.console_text.insert(tk.END, "Display console log here...\n")
-    for i in range(5):
-      self.console_text.insert(tk.END, f"Example log {i + 1}\n")
 
-    self.console_text.configure(state=tk.DISABLED)
+    self.log_display_manager = LogDisplayManager(
+      text_widget=self.console_text,
+      log_queue=log_queue,
+      update_interval=100,
+    )
+    self.log_display_manager.add_manual_message("Console initialized", "INFO")
+    self.log_display_manager.add_manual_message("Ready for operations...", "INFO")

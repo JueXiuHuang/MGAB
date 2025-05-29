@@ -1,3 +1,4 @@
+import logging
 import traceback
 from abc import ABC, abstractmethod
 from ctypes import windll
@@ -8,6 +9,8 @@ import win32ui
 from PIL import Image
 
 from adb import ADB
+
+logger = logging.getLogger(__name__)
 
 
 class Screen(ABC):
@@ -31,8 +34,8 @@ class ADBScreen(Screen):
       img = self.adb.screenshot()
       height, width = img.shape[:2]
       img = cv2.resize(img, (int(width * zoom_ratio), int(height * zoom_ratio)))
-    except:
-      print(traceback.format_exc())
+    except Exception:
+      logger.exception(traceback.format_exc())
       return (False, None)
     return (True, img)
 
@@ -76,7 +79,7 @@ class WIN32Screen(Screen):
     savedc.SelectObject(bmp)
 
     result = windll.user32.PrintWindow(self.hwnd, savedc.GetSafeHdc(), 3)
-    print(result)
+    logger.info(result)
 
     bmpinfo = bmp.GetInfo()
     bmpstr = bmp.GetBitmapBits(True)

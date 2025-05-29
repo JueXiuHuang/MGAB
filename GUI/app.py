@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -9,6 +10,8 @@ from config import AppConfig
 
 from .panels.home import HomePanel
 from .panels.setting import SettingsPanel
+
+logger = logging.getLogger(__name__)
 
 
 class AppGUI:
@@ -199,7 +202,7 @@ class AppGUI:
             "Save fail",
             f"Column '{section_name}.{err_loc}' has invalid value [{tk_value}]:\n{error_detail['msg']}",
           )
-          print(f"Validation error updating {section_name}.{key_name} with '{tk_value}': {e}")
+          logger.exception("Validation error updating %s.%s with '%s': %s", section_name, key_name, tk_value, e)
     return all_updates_valid
 
   def _write_config_to_file(self) -> None:
@@ -208,9 +211,10 @@ class AppGUI:
     try:
       self.config.save_to_file(config_file_path_str)
       messagebox.showinfo("Save Success", f"Config save to {config_file_path_str} success")
+      logger.info("Config saved to '%s' successfully.", config_file_path_str)
     except Exception as e:
       error_msg = f"Unexpect error when saving config: {e}"
-      print(error_msg)
+      logger.exception(error_msg)
       messagebox.showerror("Save fail", error_msg)
 
   def save_settings(self) -> None:

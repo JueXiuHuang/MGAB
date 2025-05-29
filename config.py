@@ -1,7 +1,10 @@
+import logging
 from pathlib import Path
 
 import toml
 from pydantic import BaseModel, Field, ValidationError
+
+logger = logging.getLogger(__name__)
 
 
 class DisplayInputAdjust(BaseModel):
@@ -56,7 +59,7 @@ class AppConfig(BaseModel):
     """Load from toml and verify data."""
     file_path_obj = Path(file_path)
     if not file_path_obj.exists():
-      print(f"Warning: Configuration file '{file_path_obj}' not found. Returning default configuration.")
+      logger.warning("Warning: Configuration file '%s' not found. Returning default configuration.", file_path_obj)
       return cls()
 
     try:
@@ -64,16 +67,16 @@ class AppConfig(BaseModel):
         data_from_toml = toml.load(f)
       return cls(**data_from_toml)
     except toml.TomlDecodeError as e:
-      print(f"Error decoding TOML file '{file_path_obj}': {e}")
-      print("Returning default configuration.")
+      logger.warning("Error decoding TOML file '%s': %s", file_path_obj, e)
+      logger.warning("Returning default configuration.")
       return cls()
     except ValidationError as e:
-      print(f"Configuration validation error from file '{file_path_obj}': {e}")
-      print("Please check your config.toml structure. Returning default configuration.")
+      logger.warning("Configuration validation error from file '%s': %s", file_path_obj, e)
+      logger.warning("Please check your config.toml structure. Returning default configuration.")
       return cls()
     except Exception as e:
-      print(f"An unexpected error occurred while loading config '{file_path_obj}': {e}")
-      print("Returning default configuration.")
+      logger.exception("An unexpected error occurred while loading config '%s': %s", file_path_obj, e)
+      logger.warning("Returning default configuration.")
       return cls()
 
   def save_to_file(self, file_path: str | Path = "config.toml") -> None:
@@ -83,6 +86,6 @@ class AppConfig(BaseModel):
       config_dict = self.model_dump(mode="python")
       with file_path_obj.open("w", encoding="utf-8") as f:
         toml.dump(config_dict, f)
-      print(f"Configuration successfully saved to '{file_path_obj}'.")
+      logger.info("Configuration successfully saved to '%s'.", file_path_obj)
     except Exception as e:
-      print(f"Error saving configuration to '{file_path_obj}': {e}")
+      logger.exception("Error saving configuration to '%s': %s", file_path_obj, e)
